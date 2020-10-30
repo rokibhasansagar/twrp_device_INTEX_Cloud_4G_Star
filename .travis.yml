@@ -1,0 +1,57 @@
+os: linux
+dist: bionic
+language: generic
+git:
+  depth: 1
+addons:
+  apt:
+    update:
+      - true
+services:
+  - docker
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 2>/dev/null
+  - docker pull fr3akyphantom/droid-builder:latest
+before_script:
+  - cd $HOME && mkdir twrp
+  - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-5.1-norepo-20201030.tar.xz"
+  - wget -q ${TWRP_SOURCE} -O $HOME/twrp.tar.xz
+  - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
+script:
+  - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
+  - rm -f build/tools/roomservice.py && curl -sL https://gist.github.com/rokibhasansagar/ff6c46329609e139615f5c3b9d81de94/raw/roomservice_51.py -o build/tools/roomservice.py && chmod 755 build/tools/roomservice.py
+  - rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
+  - |
+    mkdir -p .repo && cat << EOR > .repo/roomservice.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <manifest>
+    </manifest>
+    EOR
+  - |
+    docker run --rm -i -e USER_ID=1000 -e GROUP_ID=1000 -v "$(pwd):/home/builder/twrp/:rw,z" -v "${HOME}/.ccache:/srv/ccache:rw,z" fr3akyphantom/droid-builder sudo bash << EOF
+    set -eo pipefail
+    cd /home/builder/twrp/
+    source build/envsetup.sh
+    lunch omni_Cloud_4G_Star-eng
+    make -j$(nproc --all) recoveryimage
+    exit
+    EOF
+after_success:
+  - export version=$(cat bootable/recovery/variables.h | grep "define TW_MAIN_VERSION_STR" | cut -d '"' -f2)
+  - cp $HOME/twrp/out/target/product/Cloud_4G_Star/recovery.img $HOME/twrp/TWRP-$version-Cloud_4G_Star-$(date +"%Y%m%d")-Unofficial.img
+  - cd $HOME/twrp/
+deploy:
+  skip_cleanup: true
+  provider: releases
+  # The secret api_key will be loaded from the environment variables
+  api_key: $GitOAUTHToken
+  file_glob: true
+  file: $HOME/twrp/*.img
+  on:
+    branch: twrp
+branches:
+  only:
+    - twrp
+  except:
+    - /^(?i:untagged)-.*$/
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
