@@ -14,12 +14,11 @@ before_install:
   - docker pull fr3akyphantom/droid-builder:latest
 before_script:
   - cd $HOME && mkdir twrp
-  - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-5.1-norepo-20201030.tar.xz"
-  - wget -q ${TWRP_SOURCE} -O $HOME/twrp.tar.xz
-  - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
+  - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201103/MinimalOmniRecovery-twrp-5.1-norepo-20201103.tzst"
+  - wget -q ${TWRP_SOURCE} -O $HOME/twrp/twrp.tzst
+  - tar --zstd -xf twrp.tzst --directory $HOME/twrp/ && rm twrp.tzst
 script:
-  - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
-  - rm -f build/tools/roomservice.py && curl -sL https://gist.github.com/rokibhasansagar/ff6c46329609e139615f5c3b9d81de94/raw/roomservice_51.py -o build/tools/roomservice.py && chmod 755 build/tools/roomservice.py
+  - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star.py
   - rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
   - |
     mkdir -p .repo && cat << EOR > .repo/roomservice.xml
@@ -29,7 +28,6 @@ script:
     EOR
   - |
     docker run --rm -i -e USER_ID=1000 -e GROUP_ID=1000 -v "$(pwd):/home/builder/twrp/:rw,z" -v "${HOME}/.ccache:/srv/ccache:rw,z" fr3akyphantom/droid-builder sudo bash << EOF
-    set -eo pipefail
     cd /home/builder/twrp/
     source build/envsetup.sh
     lunch omni_Cloud_4G_Star-eng
@@ -37,7 +35,7 @@ script:
     exit
     EOF
 after_success:
-  - export version=$(cat bootable/recovery/variables.h | grep "define TW_MAIN_VERSION_STR" | cut -d '"' -f2)
+  - export version=$(grep "define TW_MAIN_VERSION_STR" bootable/recovery/variables.h | cut -d '"' -f2)
   - cp $HOME/twrp/out/target/product/Cloud_4G_Star/recovery.img $HOME/twrp/TWRP-$version-Cloud_4G_Star-$(date +"%Y%m%d")-Unofficial.img
   - cd $HOME/twrp/
 deploy:
@@ -47,7 +45,7 @@ deploy:
   api_key: $GitOAUTHToken
   file_glob: true
   file: $HOME/twrp/*.img
-  on:
+  on:4
     branch: twrp
 branches:
   only:
