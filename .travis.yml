@@ -21,8 +21,12 @@ before_script:
   - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201103/MinimalOmniRecovery-twrp-5.1-norepo-20201103.tzst"
   - aria2c -x16 -s8 --console-log-level=error --summary-interval=0 "${TWRP_SOURCE}" -o twrp.tzst || wget -q --show-progress --progress=bar:force "${TWRP_SOURCE}" -O twrp.tzst
   - tar --zstd -xf twrp.tzst --directory $HOME/twrp/ && rm twrp.tzst
-script:
+  - ls -lAog $HOME/twrp/build/tools/
   - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
+  - ls -lAog device/INTEX/Cloud_4G_Star
+  - [ ! -s build/tools ] && curl -sL https://gist.github.com/rokibhasansagar/247ddd4ef00dcc9d3340397322051e6a/raw/roomservice_51.py -o build/tools/roomservice.py
+  - chmod 755 build/tools/roomservice.py
+script:
   #- rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
   #- |
     #mkdir -p .repo && cat << EOR > .repo/roomservice.xml
