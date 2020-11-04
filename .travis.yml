@@ -15,17 +15,16 @@ services:
   - docker
 before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 2>/dev/null
-  - docker pull fr3akyphantom/droid-builder:latest
+  - docker pull fr3akyphantom/droid-builder:edge
 before_script:
   - cd $HOME && mkdir twrp
   - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201103/MinimalOmniRecovery-twrp-5.1-norepo-20201103.tzst"
   - aria2c -x16 -s8 --console-log-level=error --summary-interval=0 "${TWRP_SOURCE}" -o twrp.tzst || wget -q --show-progress --progress=bar:force "${TWRP_SOURCE}" -O twrp.tzst
   - tar --zstd -xf twrp.tzst --directory $HOME/twrp/ && rm twrp.tzst
   - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
-  - ls -lAog device/INTEX/Cloud_4G_Star
+  - rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
   - rm -f build/tools/roomservice.py 2>/dev/null && curl -sL https://gist.github.com/rokibhasansagar/247ddd4ef00dcc9d3340397322051e6a/raw/roomservice_51.py -o build/tools/roomservice.py
   - chmod 755 build/tools/roomservice.py
-  - ls -lAog build/tools/
 script:
   - echo "Start"    
   - |
@@ -36,6 +35,8 @@ script:
     <manifest>
     </manifest>
     EOR
+    git clone --depth 1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6 -b lollipop-mr1-release prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6
+    git clone --depth 1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8 -b lollipop-mr1-release prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8
     source build/envsetup.sh
     lunch omni_Cloud_4G_Star-eng
     make -j$(nproc --all) recoveryimage
