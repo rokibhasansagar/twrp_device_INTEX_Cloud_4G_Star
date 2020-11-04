@@ -24,7 +24,7 @@ before_script:
   - ls -lAog $HOME/twrp/build/tools/
   - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
   - ls -lAog device/INTEX/Cloud_4G_Star
-  - [ ! -s build/tools ] && curl -sL https://gist.github.com/rokibhasansagar/247ddd4ef00dcc9d3340397322051e6a/raw/roomservice_51.py -o build/tools/roomservice.py
+  - [[ ! -s "./build/tools/roomservice.py" ]] && curl -sL https://gist.github.com/rokibhasansagar/247ddd4ef00dcc9d3340397322051e6a/raw/roomservice_51.py -o build/tools/roomservice.py
   - chmod 755 build/tools/roomservice.py
 script:
   #- rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
