@@ -1,12 +1,14 @@
 os: linux
-dist: bionic
+dist: focal
+group: edge
 language: generic
 git:
   depth: 1
 addons:
   apt:
-    update:
-      - true
+    update: true
+    packages:
+    - aria2
 services:
   - docker
 before_install:
@@ -15,17 +17,17 @@ before_install:
 before_script:
   - cd $HOME && mkdir twrp
   - TWRP_SOURCE="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201103/MinimalOmniRecovery-twrp-5.1-norepo-20201103.tzst"
-  - wget -q ${TWRP_SOURCE} -O $HOME/twrp/twrp.tzst
+  - aria2c -x16 -s8 --console-log-level=error --summary-interval=0 "${TWRP_SOURCE}" || wget -q --show-progress --progress=bar:force "${TWRP_SOURCE}"
   - tar --zstd -xf twrp.tzst --directory $HOME/twrp/ && rm twrp.tzst
 script:
-  - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star.py
-  - rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
-  - |
-    mkdir -p .repo && cat << EOR > .repo/roomservice.xml
-    <?xml version="1.0" encoding="UTF-8"?>
-    <manifest>
-    </manifest>
-    EOR
+  - cd $HOME/twrp/ && git clone --depth 1 https://github.com/rokibhasansagar/twrp_device_INTEX_Cloud_4G_Star.git -b twrp device/INTEX/Cloud_4G_Star
+  #- rm -rf bootable/recovery && git clone --depth 1 https://github.com/TeamWin/android_bootable_recovery -b android-9.0 bootable/recovery
+  #- |
+    #mkdir -p .repo && cat << EOR > .repo/roomservice.xml
+    #<?xml version="1.0" encoding="UTF-8"?>
+    #<manifest>
+    #</manifest>
+    #EOR
   - |
     docker run --rm -i -e USER_ID=1000 -e GROUP_ID=1000 -v "$(pwd):/home/builder/twrp/:rw,z" -v "${HOME}/.ccache:/srv/ccache:rw,z" fr3akyphantom/droid-builder sudo bash << EOF
     cd /home/builder/twrp/
@@ -39,13 +41,12 @@ after_success:
   - cp $HOME/twrp/out/target/product/Cloud_4G_Star/recovery.img $HOME/twrp/TWRP-$version-Cloud_4G_Star-$(date +"%Y%m%d")-Unofficial.img
   - cd $HOME/twrp/
 deploy:
-  skip_cleanup: true
-  provider: releases
-  # The secret api_key will be loaded from the environment variables
-  api_key: $GitOAUTHToken
+  provider: releasess
+  token: $GitOAUTHToken
   file_glob: true
   file: $HOME/twrp/*.img
-  on:4
+  cleanup: false
+  on:
     branch: twrp
 branches:
   only:
