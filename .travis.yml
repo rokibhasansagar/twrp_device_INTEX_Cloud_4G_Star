@@ -26,7 +26,7 @@ before_script:
   - rm -f build/tools/roomservice.py 2>/dev/null && curl -sL https://gist.github.com/rokibhasansagar/247ddd4ef00dcc9d3340397322051e6a/raw/roomservice_51.py -o build/tools/roomservice.py
   - chmod 755 build/tools/roomservice.py
   - git clone --depth 1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8 -b lollipop-mr1-release prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8
-  - rm -rf prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3 prebuilts/gcc/linux-x86/arm/arm-eabi-4.7 prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.8
+  - rm -rf prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3 prebuilts/gcc/linux-x86/arm/arm-eabi-4.7
     prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6 prebuilts/gcc/linux-x86/host/x86_64-w64-mingw32-4.8
     prebuilts/android-emulator/darwin-x86_64 prebuilts/android-emulator/windows prebuilts/misc/android-mips64 prebuilts/misc/android-mips
     prebuilts/misc/darwin-x86_64 prebuilts/misc/darwin-x86/ prebuilts/misc/windows
