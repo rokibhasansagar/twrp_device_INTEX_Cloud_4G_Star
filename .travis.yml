@@ -35,10 +35,9 @@ script:
     <manifest>
     </manifest>
     EOR
-    git clone --depth 1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6 -b lollipop-mr1-release prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6
     git clone --depth 1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8 -b lollipop-mr1-release prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.8
     source build/envsetup.sh
-    lunch omni_Cloud_4G_Star-eng
+    lunch omni_Cloud_4G_Star-eng || true
     make -j$(nproc --all) recoveryimage
     exit
     EOF
