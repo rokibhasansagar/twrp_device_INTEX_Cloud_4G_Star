@@ -29,9 +29,9 @@ before_script:
   - rm -rf prebuilts/gcc/linux-x86/arm/arm-eabi-4.4.3 prebuilts/gcc/linux-x86/arm/arm-eabi-4.7 prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.8
     prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.11-4.6 prebuilts/gcc/linux-x86/host/x86_64-w64-mingw32-4.8
     prebuilts/android-emulator/darwin-x86_64 prebuilts/android-emulator/windows prebuilts/misc/android-mips64 prebuilts/misc/android-mips
-    prebuilts/misc/darwin-x86_64 prebuilts/misc/darwin-x86/ prebuilts/misc/windows prebuilts/ndk/{4..7} prebuilts/sdk/{4..19}
+    prebuilts/misc/darwin-x86_64 prebuilts/misc/darwin-x86/ prebuilts/misc/windows
     prebuilts/tools/darwin-x86_64 prebuilts/tools/darwin-x86_64 prebuilts/tools/windows-x86_64 prebuilts/tools/windows
-    tools/external/gradle/gradle-1.{3..6}-all.zip 2>/dev/null
+    tools/external/gradle/gradle-1.{3..5}-all.zip 2>/dev/null
 
 script:
   - echo "Start"    
